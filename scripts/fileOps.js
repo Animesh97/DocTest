@@ -48,25 +48,22 @@ var dictionaryToken = function(url,file){
 		var dict=tokenizer.tokenize(data);		//Tokenized Dictionary for spell checking
 		var fdata=fs.readFileSync(file,"utf8");
 		var arr=tokenizer.tokenize(fdata);
-		dictionary=dict.concat(arr);
+		dictionary=dict.concat(arr);			//Concatinating dictionary and perfect document tokens
 		resolve();
 	});
 };
-var spellCheck = function(){
-	console.log("Inside Spellcheck");
+var spellCheck = function(){					//Function for performing spell check
 	var wrong=0;
 	var spellcheck = new natural.Spellcheck(dictionary);
 	token.map(function(word){
 		if(!spellcheck.isCorrect(word))
 		{
 			wrong += 1;
-			console.log(word);
 		}
 	});
 	spellMist = (wrong/token.length)*100;
-	console.log(wrong);
 };
-var objectCreate = function(){
+var objectCreate = function(){				//Creating JSON Object
 	obj={
 			output : {
 			perfect_length : length[0],
@@ -84,9 +81,9 @@ var objectCreate = function(){
 			spelling_mistakes : spellMist
 		}
 	}
-	let json = JSON.stringify(obj,null,2);
+	let json = JSON.stringify(obj,null,2);		//Writing it to file
 	console.log(json);
-	fs.writeFile("object.json",json,"utf8",(err)=>{
+	fs.writeFile("JSONobject.json",json,"utf8",(err)=>{
 		if(err)
 			console.log(err);
 		else
@@ -98,12 +95,12 @@ var objectCreate = function(){
 };
 
 
-calcParametre("file1.txt").then(function(){		//Function Call for reading Perfect Document
+calcParametre("perfectDocument.txt").then(function(){		//Function Call for reading Perfect Document
 	index++;									//Index is 0 for perfect document and 1 for our document
-	return calcParametre("file2.txt");			//Reading the document to be tested
+	return calcParametre("sampleDocument.txt");			//Reading the document to be tested
 }).then(function(){
 	index++;
-	return dictionaryToken("../dictionary.txt","file1.txt");
+	return dictionaryToken("../dictionary.txt","perfectDocument.txt");
 }).then(function(){
 	console.log("Calling Spellcheck");
 	return spellCheck();
